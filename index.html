@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVR Program</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CVR Program</h1>
+        <button onclick="copyCode()">Copy1</button>
+    </div>
+
+    <script>
+        const robotCode = `class PalletizingRobot:
+
+    def __init__(self,rows,cols,start_x=0,start_y=0,spacing=50):
+        """initializ pallet grid parameters"""
+        self.rows=rows
+        self.cols=cols
+        self.start_x=start_x
+        self.start_y=start_y
+        self.spacing=spacing
+
+    def generate_positions(self):
+        """generate grid coordinate palletizing"""
+        positions=[]
+        for row in range(self.rows):
+            for col in range(self.cols):
+                x=self.start_x+col*self.spacing
+                y=self.start_y+row*self.spacing
+                positions.append((x,y))
+        return positions
+
+    def move_to_position(self,x,y):
+        """simulate the robot moveing to spacific position"""
+        print(f"moving to position x:{x},y:{y}")
+
+    def perform_palletizing(self):
+        """perform the full palletizing position"""
+        positions=self.generate_positions()
+        for pos in positions:
+            self.move_to_position(*pos)
+            print(f"place item at:{pos}")
+
+robot=PalletizingRobot(rows=3,cols=3)
+robot.perform_palletizing()`;
+
+        async function copyCode() {
+            try {
+                await navigator.clipboard.writeText(robotCode);
+                alert('Code copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                alert('Failed to copy code to clipboard');
+            }
+        }
+    </script>
+</body>
+</html>
