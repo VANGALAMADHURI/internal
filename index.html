@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVR Program</title>
+    <title>Program</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,12 +31,17 @@
         button:hover {
             background-color: #45a049;
         }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>CVR Program</h1>
-        <button onclick="copyCode()">Copy1</button>
+        <h1></h1>
+        <button onclick="copyCode()">C1</button>
+        <button onclick="copyArduinoCode()">C2</button>
     </div>
 
     <script>
@@ -74,10 +79,55 @@
 robot=PalletizingRobot(rows=3,cols=3)
 robot.perform_palletizing()`;
 
+        const arduinoCode = `#include "Wire.h"
+#include "SHT31.h"
+#define SHT31_ADDRESS 
+uint32_t start;
+uint32_t stop;
+SHT31 sht;
+
+void setup()
+{
+ Serial.begin(115200);
+ Serial.println(__FILE__);
+ Serial.print("SHT31_LIB_VERSION: \t");
+ Serial.println(SHT31_LIB_VERSION);
+ Wire.begin();
+ sht.begin(SHT31_ADDRESS);
+ Wire.setClock(100000);
+ uint16_t stat = sht.readStatus();
+ Serial.print(stat, HEX);
+ Serial.println();
+}
+
+void loop()
+{
+ start = micros();
+ sht.read(); // default = true/fast slow = false
+ stop = micros();
+ Serial.print("\t");
+ Serial.print(stop - start);
+ Serial.print("\t");
+ Serial.print(sht.getTemperature(), 1);
+ Serial.print("\t");
+ Serial.println(sht.getHumidity(), 1);
+ delay(2000);
+}`;
+
         async function copyCode() {
             try {
                 await navigator.clipboard.writeText(robotCode);
                 alert('Code copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                alert('Failed to copy code to clipboard');
+            }
+        }
+
+        async function copyArduinoCode() {
+            try {
+                await navigator.clipboard.writeText(arduinoCode);
+                alert('Arduino code copied to clipboard!');
             } catch (err) {
                 console.error('Failed to copy code:', err);
                 alert('Failed to copy code to clipboard');
