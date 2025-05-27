@@ -42,9 +42,99 @@
         <h1></h1>
         <button onclick="copyCode()">C1</button>
         <button onclick="copyArduinoCode()">C2</button>
+        <button onclick="copyNeuralNetCode()">S9</button>
+        <button onclick="copyXORCode()">S10</button>
     </div>
 
     <script>
+        const xorCode = `import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# XOR data
+X = torch.tensor([[0.0, 0.0],
+                  [0.0, 1.0],
+                  [1.0, 0.0],
+                  [1.0, 1.0]])
+y = torch.tensor([[0.0],
+                  [1.0],
+                  [1.0],
+                  [0.0]])
+
+# Neural network model
+class XORModel(nn.Module):
+    def __init__(self):
+        super(XORModel, self).__init__()
+        self.hidden = nn.Linear(2, 4)
+        self.output = nn.Linear(4, 1)
+
+    def forward(self, x):
+        x = torch.sigmoid(self.hidden(x))
+        x = torch.sigmoid(self.output(x))
+        return x
+
+# Model, loss, optimizer
+model = XORModel()
+criterion = nn.BCELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.1)
+
+# Training loop
+for epoch in range(10000):
+    output = model(X)
+    loss = criterion(output, y)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if epoch % 1000 == 0:
+        print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
+
+# Prediction
+with torch.no_grad():
+    predicted = model(X)
+    predicted_classes = (predicted > 0.5).float()
+    print("\nPredictions after training:")
+    print(predicted_classes)`;
+
+        function copyXORCode() {
+            navigator.clipboard.writeText(xorCode);
+            alert('XOR Neural Network code copied to clipboard!');
+        }
+
+        const neuralNetCode = `import numpy as np 
+import tensorflow as tf 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense 
+from tensorflow.keras.optimizers import Adam 
+
+X = np.array([[1, 0, 0], 
+              [0, 1, 0], 
+              [0, 0, 1]]) 
+y = np.array([[1], 
+              [0], 
+              [2]]) 
+
+model = Sequential() 
+model.add(Dense(4, input_dim=3, activation='relu')) 
+model.add(Dense(3, activation='softmax')) 
+model.compile(loss='sparse_categorical_crossentropy', 
+              optimizer=Adam(), 
+              metrics=['accuracy']) 
+
+model.fit(X, y, epochs=1000, verbose=0) 
+predictions = model.predict(X) 
+
+for i, prediction in enumerate(predictions): 
+    predicted_class = np.argmax(prediction) 
+    print(f"Word: {['apple', 'banana', 'grape'][i]} -> Predicted Class: {predicted_class}, Probabilities: {prediction}")`;
+
+        function copyNeuralNetCode() {
+            navigator.clipboard.writeText(neuralNetCode);
+            alert('Neural Network code copied to clipboard!');
+        }
+
+
         const robotCode = `class PalletizingRobot:
 
     def __init__(self,rows,cols,start_x=0,start_y=0,spacing=50):
@@ -114,25 +204,156 @@ void loop()
  delay(2000);
 }`;
 
-        async function copyCode() {
-            try {
-                await navigator.clipboard.writeText(robotCode);
-                alert('Code copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy code:', err);
-                alert('Failed to copy code to clipboard');
-            }
+        const geneticCode = `import numpy as np
+import matplotlib.pyplot as plt
+
+def fitness_function(x):
+    return x ** 2
+
+def create_population(pop_size, x_range):
+    return np.random.uniform(low=x_range[0], high=x_range[1], size=pop_size)
+
+def select_parents(population, fitness_values, num_parents):
+    parents = population[np.argsort(fitness_values)[-num_parents:]]
+    return parents
+
+def crossover(parents, num_offspring):
+    offspring = []
+    for i in range(num_offspring):
+        parent1, parent2 = parents[i % len(parents)], parents[(i + 1) % len(parents)]
+        offspring.append([parent1, parent2])  # Keep parents as single values within lists
+    return np.array(offspring).flatten()
+
+def mutate(offspring, mutation_rate, x_range):
+    for i in range(len(offspring)):
+        if np.random.rand() < mutation_rate:
+            offspring[i] = np.random.uniform(low=x_range[0], high=x_range[1])
+    return offspring
+
+def genetic_algorithm(pop_size, num_generations, x_range, mutation_rate, num_parents):
+    population = create_population(pop_size, x_range)
+    fitness_history = []
+    population_history = []
+    
+    for generation in range(num_generations):
+        fitness_values = np.array([fitness_function(x) for x in population])
+        fitness_history.append(np.max(fitness_values))
+        population_history.append(population.copy())
+        
+        parents = select_parents(population, fitness_values, num_parents)
+        offspring = crossover(parents, pop_size - num_parents)
+        population = np.concatenate((parents, offspring))
+        population = mutate(population, mutation_rate, x_range)
+    
+    return population, fitness_history, population_history
+
+# Set algorithm parameters
+pop_size = 50
+num_generations = 100
+x_range = (-10, 10)
+mutation_rate = 0.1
+num_parents = 10
+
+# Run genetic algorithm
+final_population, fitness_history, population_history = genetic_algorithm(
+    pop_size, num_generations, x_range, mutation_rate, num_parents
+)
+
+# Create figure with two subplots
+plt.figure(figsize=(12, 5))
+
+# Plot 1: Fitness Progress
+plt.subplot(1, 2, 1)
+plt.plot(fitness_history)
+plt.title('Genetic Algorithm Fitness Progress')
+plt.xlabel('Generation')
+plt.ylabel('Max Fitness')
+plt.grid(True)
+
+# Plot 2: Population Distribution
+plt.subplot(1, 2, 2)
+plt.hist(final_population, bins=20, edgecolor='black')
+plt.title('Final Population Distribution')
+plt.xlabel('Value')
+plt.ylabel('Frequency')
+plt.grid(True)
+
+# Adjust layout and display
+plt.tight_layout()
+plt.show()`
+
+        function copyCode() {
+            navigator.clipboard.writeText(robotCode);
+            alert('Robot code copied to clipboard!');
         }
 
-        async function copyArduinoCode() {
-            try {
-                await navigator.clipboard.writeText(arduinoCode);
-                alert('Arduino code copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy code:', err);
-                alert('Failed to copy code to clipboard');
-            }
+        function copyArduinoCode() {
+            navigator.clipboard.writeText(arduinoCode);
+            alert('Arduino code copied to clipboard!');
+        }
+
+        function copyGeneticCode() {
+            navigator.clipboard.writeText(geneticCode);
+            alert('Genetic Algorithm code copied to clipboard!');
+        }
+
+        function copyS8Code() {
+            const s8Code = `import numpy as np
+import matplotlib.pyplot as plt
+
+def fitness_function(x):
+    return x ** 2
+
+def create_population(pop_size, x_range):
+    return np.random.uniform(low=x_range[0], high=x_range[1], size=pop_size)
+
+def select_parents(population, fitness_values, num_parents):
+    parents = population[np.argsort(fitness_values)[-num_parents:]]
+    return parents
+
+def crossover(parents, num_offspring):
+    offspring = []
+    for i in range(num_offspring):
+        parent1, parent2 = parents[i % len(parents)], parents[(i + 1) % len(parents)]
+        offspring.append([parent1, parent2]) # Keep parents as single values within lists
+    return np.array(offspring).flatten()
+
+def mutate(offspring, mutation_rate, x_range):
+    for i in range(len(offspring)):
+        if np.random.rand() < mutation_rate:
+            offspring[i] = np.random.uniform(low=x_range[0], high=x_range[1])
+    return offspring
+
+def genetic_algorithm(pop_size, num_generations, x_range, mutation_rate, num_parents):
+    population = create_population(pop_size, x_range)
+    fitness_history = []
+    for generation in range(num_generations):
+        fitness_values = np.array([fitness_function(x) for x in population])
+        fitness_history.append(np.max(fitness_values))
+        parents = select_parents(population, fitness_values, num_parents)
+        offspring = crossover(parents, pop_size - num_parents)
+        population = np.concatenate((parents, offspring))
+        population = mutate(population, mutation_rate, x_range)
+    return population, fitness_history
+
+pop_size = 50
+num_generations = 100
+x_range = (-10, 10)
+mutation_rate = 0.1
+num_parents = 10
+
+final_population, fitness_history = genetic_algorithm(pop_size, num_generations, x_range, mutation_rate, num_parents)
+
+plt.plot(fitness_history)
+plt.title('Genetic Algorithm Fitness Progress')
+plt.xlabel('Generation')
+plt.ylabel('Max Fitness')
+plt.grid(True)
+plt.show()`;
+            navigator.clipboard.writeText(s8Code);
+            alert('S8 code copied to clipboard!');
         }
     </script>
+    <button onclick="copyS8Code()">Copy S8 Code</button>
 </body>
 </html>
